@@ -1,0 +1,53 @@
+# Ignore everything at root level
+/*
+
+# Except these files/folders
+!.gitignore
+!.pre-commit-config.yaml
+!.sqlfluff
+!requirements-dev.txt
+!README.md
+!dbt101/
+
+# Python
+*.py[cod]
+*$py.class
+*.so
+.Python
+__pycache__/
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Virtual Environments
+.venv/
+venv/
+env/
+ENV/
+.env
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# dbt artifacts (inside dbt101)
+dbt101/target/
+dbt101/dbt_packages/
+dbt101/logs/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

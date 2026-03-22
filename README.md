@@ -41,4 +41,3 @@ The script will:
 * Connect to your Snowflake instance
 * Create the `dbt_project` database, `raw` schema and required tables
 * Load the data into the corresponding tables
-

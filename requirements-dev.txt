@@ -1,0 +1,16 @@
+# Development dependencies for dbt project
+
+# Pre-commit framework
+pre-commit>=3.6.0
+
+# SQL linting and formatting
+sqlfluff>=3.0.0
+sqlfluff-templater-dbt>=3.0.0
+
+# Code formatting
+black>=24.0.0
+isort>=5.13.0
+
+# Testing (if needed)
+pytest>=7.4.0
+pytest-cov>=4.1.0
