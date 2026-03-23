@@ -1,0 +1,177 @@
+version: 2
+
+sources:
+  - name: raw
+    description: >
+      Raw data loaded from CSV files into Snowflake via automated ingestion pipeline.
+      Data is stored in the dbt_project.raw schema and loaded using Snowflake pipes.
+
+    database: dbt_project
+    schema: raw
+
+    tables:
+      - name: candidates
+        description: >
+          Candidate information including staffing status, skills, and job functions.
+          Contains historical snapshots loaded from multiple CSV files.
+        loaded_at_field: "to_timestamp(_updated_micros::bigint / 1000000)"
+        freshness:
+          warn_after: {count: 500, period: day}
+          error_after: {count: 600, period: day}
+        columns:
+          - name: _offset
+            description: Record offset number
+          - name: candidate_id
+            description: Unique identifier for candidate
+          - name: primary_skill_id
+            description: Foreign key to primary skill
+          - name: staffing_status
+            description: Current staffing status (e.g., Available)
+          - name: english_level
+            description: English proficiency level (C1, B2, etc.)
+          - name: job_function_id
+            description: Foreign key to job function
+          - name: _created_micros
+            description: Record creation timestamp in microseconds
+          - name: _updated_micros
+            description: Last update timestamp in microseconds
+
+      - name: employees
+        description: >
+          Employee records with job functions, skills, and employment details.
+          Tracks current and historical employment status.
+        loaded_at_field: "to_timestamp(_updated_micros::bigint / 1000000)"
+        freshness:
+          warn_after: {count: 500, period: day}
+          error_after: {count: 600, period: day}
+        columns:
+          - name: _offset
+            description: Record offset number
+          - name: employee_id
+            description: Unique identifier for employee
+          - name: job_function_id
+            description: Foreign key to job function
+          - name: primary_skill_id
+            description: Foreign key to primary skill
+          - name: production_category
+            description: Production category classification
+          - name: employment_status
+            description: Employment status (e.g., Full-time employee)
+          - name: org_category
+            description: Organization category
+          - name: org_category_type
+            description: Type of organization category
+          - name: work_start_micros
+            description: Work start date in microseconds
+          - name: work_end_micros
+            description: Work end date in microseconds (empty if active)
+          - name: is_active
+            description: Whether employee is currently active
+          - name: _created_micros
+            description: Record creation timestamp in microseconds
+          - name: _updated_micros
+            description: Last update timestamp in microseconds
+
+      - name: interviews
+        description: >
+          Interview records tracking candidate interviews including type, status,
+          and interviewer information.
+        loaded_at_field: "to_timestamp(_updated_micros::bigint / 1000000)"
+        freshness:
+          warn_after: {count: 500, period: hour}
+          error_after: {count: 600, period: hour}
+        columns:
+          - name: _offset
+            description: Record offset number
+          - name: id
+            description: Unique interview identifier
+          - name: candidate_type
+            description: Type of candidate (e.g., Applicant)
+          - name: candidate_id
+            description: Foreign key to candidate
+          - name: status
+            description: Interview status (e.g., DRAFT)
+          - name: interviewer_id
+            description: Identifier of the interviewer
+          - name: location
+            description: Interview location/platform (e.g., MS_TEAMS)
+          - name: logged
+            description: Whether interview was logged
+          - name: media_available
+            description: Whether media is available
+          - name: run_type
+            description: Interview run type (e.g., ONLINE)
+          - name: type
+            description: Interview type (e.g., Technical)
+          - name: media_status
+            description: Status of interview media
+          - name: invite_answer_status
+            description: Status of interview invitation response
+          - name: _created_micros
+            description: Record creation timestamp in microseconds
+          - name: _updated_micros
+            description: Last update timestamp in microseconds
+
+      - name: job_functions
+        description: >
+          Job function master data including categories, levels, and seniority tracks.
+        loaded_at_field: "to_timestamp(_updated_micros::bigint / 1000000)"
+        freshness:
+          warn_after: {count: 500, period: day}
+          error_after: {count: 600, period: day}
+        columns:
+          - name: _offset
+            description: Record offset number
+          - name: job_function_id
+            description: Unique identifier for job function
+          - name: base_name
+            description: Base name of the job function
+          - name: category
+            description: Job function category (e.g., Delivery, Other)
+          - name: is_active
+            description: Whether job function is currently active
+          - name: level
+            description: Level number
+          - name: track
+            description: Career track code
+          - name: seniority_level
+            description: Seniority level code (e.g., A4, O3)
+          - name: seniority_index
+            description: Numeric seniority index
+          - name: _created_micros
+            description: Record creation timestamp in microseconds
+          - name: _updated_micros
+            description: Last update timestamp in microseconds
+
+      - name: skills
+        description: >
+          Skills master data including hierarchical relationships and categorization.
+        loaded_at_field: "to_timestamp(_updated_micros::bigint / 1000000)"
+        freshness:
+          warn_after: {count: 240, period: day}
+          error_after: {count: 480, period: day}
+        columns:
+          - name: _offset
+            description: Record offset number
+          - name: id
+            description: Unique skill identifier
+          - name: is_active
+            description: Whether skill is currently active
+          - name: is_primary
+            description: Whether this is a primary skill
+          - name: is_key
+            description: Whether this is a key skill
+          - name: is_key_reason
+            description: Reason for key skill designation
+          - name: type
+            description: Skill type (e.g., Skill)
+          - name: name
+            description: Skill name
+          - name: url
+            description: Reference URL for skill information
+          - name: parent_id
+            description: Parent skill ID for hierarchical relationships
+          - name: _created_micros
+            description: Record creation timestamp in microseconds
+          - name: _updated_micros
+            description: Last update timestamp in microseconds

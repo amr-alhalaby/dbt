@@ -12,7 +12,7 @@ The dataset includes five main entities:
 * `job_functions`
 * `skills`
 
-## 🚀 Getting Started
+## 🚀 Getting Star ted
 
 To load the data into Snowflake, follow these steps:
 
