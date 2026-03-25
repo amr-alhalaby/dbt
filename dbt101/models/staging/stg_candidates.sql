@@ -1,11 +1,15 @@
 {{
     config(
-        materialized='view'
+        materialized='incremental',
+        unique_key='candidate_id'
     )
 }}
 
 WITH source AS (
   SELECT * FROM {{ source('raw', 'candidates') }}
+  {% if is_incremental() %}
+    WHERE to_timestamp(_updated_micros::bigint / 1000000) > (SELECT max(updated_at) FROM {{ this }})
+  {% endif %}
 ),
 
 renamed AS (
