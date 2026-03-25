@@ -35,7 +35,3 @@ models:
     staging:
       +materialized: view
       +schema: staging
-
-    # Example models (can be removed later)
-    example:
-      +materialized: view

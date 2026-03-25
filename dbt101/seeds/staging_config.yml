@@ -1,0 +1,46 @@
+version: 2
+
+seeds:
+  - name: staging_config
+    description: >
+      Configuration file for transforming raw tables into staging models.
+      This seed defines the mapping between raw column names and their desired
+      target names, data types, and ordering in the staging layer.
+    config:
+      column_types:
+        raw_table_name: varchar(100)
+        raw_column_name: varchar(200)
+        target_column_name: varchar(200)
+        target_data_type: varchar(100)
+        target_order_num: number(10,0)
+    columns:
+      - name: raw_table_name
+        description: Name of the source table in the raw schema (uppercase)
+        tests:
+          - not_null
+
+      - name: raw_column_name
+        description: Original column name in the raw table (as stored in source)
+        tests:
+          - not_null
+
+      - name: target_column_name
+        description: >
+          Desired column name in the staging layer.
+          Cleaned and standardized (lowercase, underscores, no special characters).
+        tests:
+          - not_null
+
+      - name: target_data_type
+        description: >
+          Desired data type for the column in staging layer.
+          Examples: VARCHAR(100), TIMESTAMP_NTZ, BOOLEAN, INTEGER
+        tests:
+          - not_null
+
+      - name: target_order_num
+        description: >
+          Desired column order in the staging model (1-based index).
+          Used to ensure consistent column ordering across all staging models.
+        tests:
+          - not_null
