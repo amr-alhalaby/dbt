@@ -1,0 +1,62 @@
+version: 2
+
+models:
+  - name: stg_candidates_historical
+    description: >
+      Historical staging model for candidates using the staging_model macro.
+      Contains all historical records with row validity tracking.
+    columns:
+      - name: candidate_id
+        description: Unique identifier for candidate
+        tests:
+          - not_null
+      - name: row_valid_to
+        description: Timestamp when this record was superseded (NULL if current)
+      - name: is_current
+        description: Boolean flag indicating if this is the current version
+      - name: created_at
+        description: When the record was first created
+      - name: updated_at
+        description: When this version of the record was created
+
+  - name: stg_candidates_latest
+    description: >
+      Latest staging model for candidates using the latest_staging_model macro.
+      Contains only the most recent version of each candidate.
+    columns:
+      - name: candidate_id
+        description: Unique identifier for candidate
+        tests:
+          - unique
+          - not_null
+      - name: is_current
+        description: Always TRUE for latest models
+      - name: row_valid_to
+        description: Always NULL for latest models
+
+  - name: stg_employees_historical
+    description: >
+      Historical staging model for employees with incremental loading.
+      Demonstrates incremental materialization strategy.
+    columns:
+      - name: employee_id
+        description: Unique identifier for employee
+        tests:
+          - not_null
+      - name: row_valid_to
+        description: Timestamp when this record was superseded (NULL if current)
+      - name: is_current
+        description: Boolean flag indicating if this is the current version
+
+  - name: stg_employees_latest
+    description: >
+      Latest staging model for employees.
+      Contains only the most recent version of each employee.
+    columns:
+      - name: employee_id
+        description: Unique identifier for employee
+        tests:
+          - unique
+          - not_null
+      - name: is_active
+        description: Whether employee is currently active

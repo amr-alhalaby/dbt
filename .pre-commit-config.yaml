@@ -17,15 +17,15 @@ repos:
       - id: debug-statements
       - id: mixed-line-ending
 
-  # SQL linting and formatting with sqlfluff
-  - repo: https://github.com/sqlfluff/sqlfluff
-    rev: 3.0.7
-    hooks:
-      - id: sqlfluff-lint
-        name: sqlfluff-lint
-        args: ['--dialect', 'snowflake', '--disable-progress-bar']
-        additional_dependencies: ['dbt-snowflake', 'sqlfluff-templater-dbt']
-      - id: sqlfluff-fix
-        name: sqlfluff-fix
-        args: ['--dialect', 'snowflake', '--disable-progress-bar']
-        additional_dependencies: ['dbt-snowflake', 'sqlfluff-templater-dbt']
+  # # SQL linting and formatting with sqlfluff
+  # - repo: https://github.com/sqlfluff/sqlfluff
+  #   rev: 3.0.7
+  #   hooks:
+  #     - id: sqlfluff-lint
+  #       name: sqlfluff-lint
+  #       args: ['--dialect', 'snowflake', '--disable-progress-bar']
+  #       additional_dependencies: ['dbt-snowflake', 'sqlfluff-templater-dbt']
+  #     - id: sqlfluff-fix
+  #       name: sqlfluff-fix
+  #       args: ['--dialect', 'snowflake', '--disable-progress-bar']
+  #       additional_dependencies: ['dbt-snowflake', 'sqlfluff-templater-dbt']

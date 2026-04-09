@@ -1,0 +1,97 @@
+version: 2
+
+models:
+  - name: dim_candidate
+    description: Candidate dimension with SCD Type 2 history
+    columns:
+      - name: _offset
+        description: Record offset (bigint)
+      - name: id
+        description: Candidate business key
+        tests:
+          - not_null
+      - name: primary_skill_id
+        tests:
+          - relationships:
+              to: ref('dim_primary_skill')
+              field: id
+      - name: job_function_id
+        tests:
+          - relationships:
+              to: ref('dim_job_function')
+              field: id
+
+  - name: dim_employee
+    description: Employee dimension with SCD Type 2 history
+    columns:
+      - name: _offset
+        description: Record offset (bigint)
+      - name: id
+        description: Employee business key
+        tests:
+          - not_null
+      - name: job_function_id
+        tests:
+          - relationships:
+              to: ref('dim_job_function')
+              field: id
+      - name: primary_skill_id
+        tests:
+          - relationships:
+              to: ref('dim_primary_skill')
+              field: id
+
+  - name: dim_primary_skill
+    description: Primary skill dimension
+    columns:
+      - name: id
+        description: Skill business key
+        tests:
+          - unique
+          - not_null
+
+  - name: dim_job_function
+    description: Job function dimension
+    columns:
+      - name: id
+        description: Job function business key
+        tests:
+          - unique
+          - not_null
+
+  - name: dim_date
+    description: Date dimension
+    columns:
+      - name: date
+        description: Calendar date
+        tests:
+          - unique
+          - not_null
+
+  - name: fct_interview
+    description: >
+      Interview fact table. Grain is one row per unique interview ID.
+      Dimension attributes reflect state at interview creation time (point-in-time).
+      interview_duration = in_progress to pending_feedback (online interviews only).
+      feedback_delay = pending_feedback to completed.
+    columns:
+      - name: id
+        description: Unique interview identifier
+        tests:
+          - unique
+          - not_null
+      - name: candidate_offset
+        tests:
+          - relationships:
+              to: ref('dim_candidate')
+              field: _offset
+      - name: interviewer_offset
+        tests:
+          - relationships:
+              to: ref('dim_employee')
+              field: _offset
+      - name: created_date
+        tests:
+          - relationships:
+              to: ref('dim_date')
+              field: date

@@ -35,3 +35,8 @@ models:
     staging:
       +materialized: view
       +schema: staging
+
+    # Marts - gold layer with facts and dimensions
+    marts:
+      +materialized: table
+      +schema: marts

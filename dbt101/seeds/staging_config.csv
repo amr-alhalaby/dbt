@@ -51,7 +51,7 @@ SKILLS,id,skill_id,VARCHAR(100),2
 SKILLS,is_active,is_active,BOOLEAN,3
 SKILLS,is_primary,is_primary,BOOLEAN,4
 SKILLS,is_key,is_key,BOOLEAN,5
-SKILLS,is_key_reason,is_key_reason,VARCHAR(200),6
+SKILLS,is_key_reason,is_key_reason,VARCHAR,6
 SKILLS,type,skill_type,VARCHAR(100),7
 SKILLS,name,skill_name,VARCHAR(200),8
 SKILLS,url,url,VARCHAR(500),9
