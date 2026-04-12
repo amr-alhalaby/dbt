@@ -8,6 +8,10 @@ version: '1.0.0'
 # This setting configures which "profile" dbt uses for this project.
 profile: 'dbt101'
 
+# Elementary package configuration
+flags:
+  require_explicit_package_overrides_for_builtin_materializations: false
+
 # These configurations specify where dbt should look for different types of files.
 # The `model-paths` config, for example, states that models in this project can be
 # found in the "models/" directory. You probably won't need to change these!
@@ -22,6 +26,22 @@ clean-targets:         # directories to be removed by `dbt clean`
   - "target"
   - "dbt_packages"
 
+# Variables for test coverage standards and elementary configuration
+vars:
+  # Test coverage standards enforced by dbt_meta_testing
+  test_coverage_standards:
+    require_model_description: true
+    require_column_description: false
+    require_pk_tests: true
+    require_fk_tests: true
+    staging_minimum_tests: 2
+    marts_minimum_tests: 3
+
+  # Elementary anomaly detection configuration
+  elementary:
+    days_back: 7
+    anomaly_sensitivity: 3
+    alert_on_anomalies: true
 
 # Configuring models
 # Full documentation: https://docs.getdbt.com/docs/configuring-models
@@ -35,8 +55,12 @@ models:
     staging:
       +materialized: view
       +schema: staging
+      +elementary:
+        +timestamp_column: "_loaded_at"
 
     # Marts - gold layer with facts and dimensions
     marts:
       +materialized: table
       +schema: marts
+      +elementary:
+        +timestamp_column: "_valid_from"

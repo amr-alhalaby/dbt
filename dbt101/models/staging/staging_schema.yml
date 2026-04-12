@@ -3,6 +3,20 @@ version: 2
 models:
   - name: stg_candidates_historical
     description: Historical staging model for candidates with SCD Type 2 tracking
+    tests:
+      - elementary.volume_anomalies:
+          timestamp_column: "_loaded_at"
+          where_expression: "row_is_active = 1"
+          anomaly_direction: both
+          training_period: 14
+          detection_period: 2
+          sensitivity: 3
+      - elementary.freshness_anomalies:
+          timestamp_column: "_loaded_at"
+          training_period: 14
+          detection_period: 1
+          sensitivity: 3
+      - elementary.schema_changes
     columns:
       - name: offset
         description: Record offset (technical surrogate key)
@@ -78,6 +92,11 @@ models:
             expression: "row_is_active = 1"
           config:
             where: "1=1"
+      - elementary.volume_anomalies:
+          timestamp_column: "_loaded_at"
+          training_period: 14
+          detection_period: 2
+          sensitivity: 3
     columns:
       - name: candidate_id
         description: Unique business identifier
@@ -94,6 +113,20 @@ models:
 
   - name: stg_employees_historical
     description: Historical staging model for employees with SCD Type 2 tracking
+    tests:
+      - elementary.volume_anomalies:
+          timestamp_column: "_loaded_at"
+          where_expression: "row_is_active = 1"
+          anomaly_direction: both
+          training_period: 14
+          detection_period: 2
+          sensitivity: 3
+      - elementary.freshness_anomalies:
+          timestamp_column: "_loaded_at"
+          training_period: 14
+          detection_period: 1
+          sensitivity: 3
+      - elementary.schema_changes
     columns:
       - name: offset
         description: Record offset (technical surrogate key)
@@ -162,6 +195,12 @@ models:
 
   - name: stg_employees_latest
     description: Latest version of each employee (current records only)
+    tests:
+      - elementary.volume_anomalies:
+          timestamp_column: "_loaded_at"
+          training_period: 14
+          detection_period: 2
+          sensitivity: 3
     columns:
       - name: employee_id
         description: Unique business identifier
@@ -171,6 +210,20 @@ models:
 
   - name: stg_interviews_historical
     description: Historical staging model for interviews
+    tests:
+      - elementary.volume_anomalies:
+          timestamp_column: "_loaded_at"
+          where_expression: "row_is_active = 1"
+          anomaly_direction: both
+          training_period: 14
+          detection_period: 2
+          sensitivity: 3
+      - elementary.freshness_anomalies:
+          timestamp_column: "_loaded_at"
+          training_period: 14
+          detection_period: 1
+          sensitivity: 3
+      - elementary.schema_changes
     columns:
       - name: offset
         description: Record offset
@@ -221,6 +274,12 @@ models:
 
   - name: stg_interviews_latest
     description: Latest version of each interview
+    tests:
+      - elementary.volume_anomalies:
+          timestamp_column: "_loaded_at"
+          training_period: 14
+          detection_period: 2
+          sensitivity: 3
     columns:
       - name: interview_id
         description: Unique interview identifier
@@ -230,6 +289,20 @@ models:
 
   - name: stg_job_functions_historical
     description: Historical staging model for job functions
+    tests:
+      - elementary.volume_anomalies:
+          timestamp_column: "_loaded_at"
+          where_expression: "row_is_active = 1"
+          anomaly_direction: both
+          training_period: 14
+          detection_period: 2
+          sensitivity: 3
+      - elementary.freshness_anomalies:
+          timestamp_column: "_loaded_at"
+          training_period: 14
+          detection_period: 1
+          sensitivity: 3
+      - elementary.schema_changes
     columns:
       - name: offset
         description: Record offset
@@ -275,6 +348,12 @@ models:
 
   - name: stg_job_functions_latest
     description: Latest version of each job function
+    tests:
+      - elementary.volume_anomalies:
+          timestamp_column: "_loaded_at"
+          training_period: 14
+          detection_period: 2
+          sensitivity: 3
     columns:
       - name: job_function_id
         description: Unique job function identifier
@@ -284,6 +363,20 @@ models:
 
   - name: stg_skills_historical
     description: Historical staging model for skills
+    tests:
+      - elementary.volume_anomalies:
+          timestamp_column: "_loaded_at"
+          where_expression: "row_is_active = 1"
+          anomaly_direction: both
+          training_period: 14
+          detection_period: 2
+          sensitivity: 3
+      - elementary.freshness_anomalies:
+          timestamp_column: "_loaded_at"
+          training_period: 14
+          detection_period: 1
+          sensitivity: 3
+      - elementary.schema_changes
     columns:
       - name: offset
         description: Record offset
@@ -328,6 +421,12 @@ models:
 
   - name: stg_skills_latest
     description: Latest version of each skill
+    tests:
+      - elementary.volume_anomalies:
+          timestamp_column: "_loaded_at"
+          training_period: 14
+          detection_period: 2
+          sensitivity: 3
     columns:
       - name: skill_id
         description: Unique skill identifier

@@ -1,0 +1,117 @@
+version: 1
+
+# Test Coverage Requirements enforced by dbt_meta_testing
+# Run with: dbt run-operation required_tests
+
+# Define test coverage rules by model pattern
+test_coverage_rules:
+
+  # Staging layer - historical models
+  - model_pattern: "stg_.*_historical"
+    description: "Historical staging models with SCD Type 2"
+    required_tests:
+      - test_type: not_null
+        columns:
+          - "*_id"
+          - "offset"
+          - "_loaded_at"
+      - test_type: unique
+        columns:
+          - "offset"
+      - test_type: accepted_values
+        columns:
+          - "row_is_current"
+        values: [true, false]
+    minimum_tests: 4
+    column_documentation_required: true
+
+  # Staging layer - latest models
+  - model_pattern: "stg_.*_latest"
+    description: "Latest staging models (current snapshot)"
+    required_tests:
+      - test_type: unique
+        columns:
+          - "*_id"
+      - test_type: not_null
+        columns:
+          - "*_id"
+          - "_loaded_at"
+    minimum_tests: 2
+    column_documentation_required: true
+
+  # Marts layer - dimension tables
+  - model_pattern: "dim_.*"
+    description: "Dimension tables in marts layer"
+    required_tests:
+      - test_type: unique
+        columns:
+          - "id"
+      - test_type: not_null
+        columns:
+          - "id"
+    minimum_tests: 2
+    column_documentation_required: true
+    model_documentation_required: true
+
+  # Marts layer - fact tables
+  - model_pattern: "fct_.*"
+    description: "Fact tables in marts layer"
+    required_tests:
+      - test_type: unique
+        columns:
+          - "id"
+      - test_type: not_null
+        columns:
+          - "id"
+      - test_type: relationships
+        minimum_count: 3  # At least 3 FK relationships in facts
+    minimum_tests: 5
+    column_documentation_required: true
+    model_documentation_required: true
+
+# Global enforcement settings
+enforcement:
+  # Fail builds if coverage requirements are not met
+  enforce_on_run: false  # Set to true for strict enforcement
+
+  # Report coverage in logs
+  report_coverage: true
+
+  # Layers to enforce (null = all layers)
+  enforcement_layers:
+    - staging
+    - marts
+
+  # Exclude patterns
+  exclude_patterns:
+    - ".*_exclude"
+    - "test_.*"
+
+# Test type definitions (what counts as each test type)
+test_definitions:
+  not_null:
+    - "not_null"
+    - "dbt_expectations.expect_column_values_to_not_be_null"
+
+  unique:
+    - "unique"
+    - "dbt_utils.unique_combination_of_columns"
+
+  relationships:
+    - "relationships"
+    - "dbt_expectations.expect_column_values_to_be_in_set"
+
+  accepted_values:
+    - "accepted_values"
+    - "dbt_expectations.expect_column_values_to_be_in_type_list"
+
+# Documentation requirements
+documentation:
+  # Require model descriptions
+  model_description_required: true
+
+  # Require column descriptions
+  column_description_required: false  # Aspirational - set true when ready
+
+  # Minimum description length
+  minimum_description_length: 10
