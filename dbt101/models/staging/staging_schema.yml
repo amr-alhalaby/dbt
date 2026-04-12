@@ -1,0 +1,336 @@
+version: 2
+
+models:
+  - name: stg_candidates_historical
+    description: Historical staging model for candidates with SCD Type 2 tracking
+    columns:
+      - name: offset
+        description: Record offset (technical surrogate key)
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: ">= 0"
+
+      - name: candidate_id
+        description: Unique business identifier for candidate
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_match_regex:
+              regex: "^[A-Za-z0-9_-]+$"
+
+      - name: primary_skill_id
+        description: Foreign key to primary skill
+        tests:
+          - dbt_expectations.expect_column_values_to_not_be_null:
+              row_condition: "staffing_status != 'Inactive'"
+              severity: warn
+
+      - name: staffing_status
+        description: Current staffing status
+        tests:
+          - accepted_values:
+              values: ['Available', 'Staffed', 'Inactive', 'On Leave']
+              quote: true
+              severity: warn
+
+      - name: english_level
+        description: English proficiency level
+        tests:
+          - accepted_values:
+              values: ['A1', 'A2', 'B1', 'B2', 'C1', 'C2', 'Native']
+              quote: true
+              severity: warn
+
+      - name: created_at
+        description: Record creation timestamp
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: timestamp_ntz
+
+      - name: updated_at
+        description: Record update timestamp
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: ">= created_at"
+              config:
+                severity: error
+
+      - name: row_valid_from
+        description: SCD Type 2 validity start
+        tests:
+          - not_null
+
+      - name: row_is_active
+        description: Current record flag
+        tests:
+          - accepted_values:
+              values: [0, 1]
+
+  - name: stg_candidates_latest
+    description: Latest version of each candidate (current records only)
+    tests:
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: "row_is_active = 1"
+          config:
+            where: "1=1"
+    columns:
+      - name: candidate_id
+        description: Unique business identifier
+        tests:
+          - unique
+          - not_null
+
+      - name: row_valid_to
+        description: Should always be NULL for latest records
+        tests:
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: "IS NULL"
+
+  - name: stg_employees_historical
+    description: Historical staging model for employees with SCD Type 2 tracking
+    columns:
+      - name: offset
+        description: Record offset (technical surrogate key)
+        tests:
+          - not_null
+
+      - name: employee_id
+        description: Unique business identifier for employee
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_match_regex:
+              regex: "^[A-Za-z0-9_-]+$"
+
+      - name: job_function_id
+        description: Foreign key to job function
+
+      - name: primary_skill_id
+        description: Foreign key to primary skill
+
+      - name: employment_status
+        description: Employment status
+        tests:
+          - accepted_values:
+              values: ['Full-time employee', 'Part-time employee', 'Contractor', 'Terminated']
+              quote: true
+              severity: warn
+
+      - name: work_start_date
+        description: Employment start date
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: "'2000-01-01'"
+              max_value: "current_date()"
+              strictly: false
+              severity: warn
+
+      - name: work_end_date
+        description: Employment end date
+        tests:
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: ">= work_start_date"
+              config:
+                where: "work_end_date IS NOT NULL"
+                severity: warn
+
+      - name: is_active
+        description: Whether employee is currently active
+        tests:
+          - not_null
+          - accepted_values:
+              values: [true, false]
+
+      - name: created_at
+        description: Record creation timestamp
+        tests:
+          - not_null
+
+      - name: updated_at
+        description: Record update timestamp
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: ">= created_at"
+
+  - name: stg_employees_latest
+    description: Latest version of each employee (current records only)
+    columns:
+      - name: employee_id
+        description: Unique business identifier
+        tests:
+          - unique
+          - not_null
+
+  - name: stg_interviews_historical
+    description: Historical staging model for interviews
+    columns:
+      - name: offset
+        description: Record offset
+        tests:
+          - not_null
+
+      - name: interview_id
+        description: Unique interview identifier
+        tests:
+          - not_null
+
+      - name: candidate_id
+        description: Foreign key to candidate
+        tests:
+          - not_null
+
+      - name: status
+        description: Interview status
+        # tests:
+        #   - accepted_values:
+        #       values: ['DRAFT', 'REQUESTED', 'SCHEDULED', 'IN_PROGRESS', 'PENDING_FEEDBACK', 'COMPLETED', 'CANCELLED']
+        #       quote: true
+
+      - name: location
+        description: Interview location/platform
+        tests:
+          - accepted_values:
+              values: ['MS_TEAMS', 'ZOOM', 'IN_PERSON', 'PHONE', 'GOOGLE_MEET']
+              quote: true
+              severity: warn
+
+      - name: logged
+        description: Whether interview was logged
+        tests:
+          - accepted_values:
+              values: [true, false]
+              severity: warn
+
+      - name: created_at
+        description: Record creation timestamp
+        tests:
+          - not_null
+
+      - name: updated_at
+        description: Record update timestamp
+        tests:
+          - not_null
+
+  - name: stg_interviews_latest
+    description: Latest version of each interview
+    columns:
+      - name: interview_id
+        description: Unique interview identifier
+        tests:
+          - unique
+          - not_null
+
+  - name: stg_job_functions_historical
+    description: Historical staging model for job functions
+    columns:
+      - name: offset
+        description: Record offset
+        tests:
+          - not_null
+
+      - name: job_function_id
+        description: Unique job function identifier
+        tests:
+          - not_null
+
+      - name: base_name
+        description: Base name of job function
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_value_lengths_to_be_between:
+              min_value: 2
+              max_value: 200
+
+      - name: category
+        description: Job function category
+        tests:
+          - accepted_values:
+              values: ['Delivery', 'Sales', 'Support', 'Other', 'Management']
+              quote: true
+              severity: warn
+
+      - name: is_active
+        description: Whether job function is active
+        tests:
+          - not_null
+          - accepted_values:
+              values: [true, false]
+
+      - name: seniority_index
+        description: Numeric seniority ranking
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 100
+              strictly: false
+              severity: warn
+
+  - name: stg_job_functions_latest
+    description: Latest version of each job function
+    columns:
+      - name: job_function_id
+        description: Unique job function identifier
+        tests:
+          - unique
+          - not_null
+
+  - name: stg_skills_historical
+    description: Historical staging model for skills
+    columns:
+      - name: offset
+        description: Record offset
+        tests:
+          - not_null
+
+      - name: skill_id
+        description: Unique skill identifier
+        tests:
+          - not_null
+
+      - name: is_active
+        description: Whether skill is active
+        tests:
+          - not_null
+          - accepted_values:
+              values: [true, false]
+
+      - name: is_primary
+        description: Whether this is a primary skill
+        tests:
+          - accepted_values:
+              values: [true, false]
+
+      - name: skill_name
+        description: Skill name
+        tests:
+          - not_null:
+              severity: warn
+          - dbt_expectations.expect_column_value_lengths_to_be_between:
+              min_value: 1
+              max_value: 200
+
+      - name: parent_skill_id
+        description: Parent skill for hierarchical relationships
+        # Self-referential FK - test with warn severity
+        tests:
+          - relationships:
+              to: ref('stg_skills_historical')
+              field: skill_id
+              severity: warn
+
+  - name: stg_skills_latest
+    description: Latest version of each skill
+    columns:
+      - name: skill_id
+        description: Unique skill identifier
+        tests:
+          - unique
+          - not_null
