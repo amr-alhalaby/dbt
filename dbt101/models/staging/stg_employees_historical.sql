@@ -4,5 +4,6 @@
     source_name='raw',
     table_name='employees',
     materialization='view',
-    pk_column='employee_id'
+    pk_column='employee_id',
+    source_pk_column='employee_id'
 ) }}

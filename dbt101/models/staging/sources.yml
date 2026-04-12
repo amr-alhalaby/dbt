@@ -14,10 +14,11 @@ sources:
         description: >
           Candidate information including staffing status, skills, and job functions.
           Contains historical snapshots loaded from multiple CSV files.
-        loaded_at_field: "to_timestamp(_updated_micros::bigint / 1000000)"
-        freshness:
-          warn_after: {count: 500, period: day}
-          error_after: {count: 600, period: day}
+        config:
+          loaded_at_field: "to_timestamp(_updated_micros::bigint / 1000000)"
+          freshness:
+            warn_after: {count: 500, period: day}
+            error_after: {count: 600, period: day}
         columns:
           - name: _offset
             description: Record offset number
@@ -56,10 +57,11 @@ sources:
         description: >
           Employee records with job functions, skills, and employment details.
           Tracks current and historical employment status.
-        loaded_at_field: "to_timestamp(_updated_micros::bigint / 1000000)"
-        freshness:
-          warn_after: {count: 500, period: day}
-          error_after: {count: 600, period: day}
+        config:
+          loaded_at_field: "to_timestamp(_updated_micros::bigint / 1000000)"
+          freshness:
+            warn_after: {count: 500, period: day}
+            error_after: {count: 600, period: day}
         columns:
           - name: _offset
             tests:
@@ -109,10 +111,11 @@ sources:
         description: >
           Interview records tracking candidate interviews including type, status,
           and interviewer information.
-        loaded_at_field: "to_timestamp(_updated_micros::bigint / 1000000)"
-        freshness:
-          warn_after: {count: 500, period: hour}
-          error_after: {count: 600, period: hour}
+        config:
+          loaded_at_field: "to_timestamp(_updated_micros::bigint / 1000000)"
+          freshness:
+            warn_after: {count: 500, period: hour}
+            error_after: {count: 600, period: hour}
         columns:
           - name: _offset
             tests:
@@ -164,10 +167,11 @@ sources:
       - name: job_functions
         description: >
           Job function master data including categories, levels, and seniority tracks.
-        loaded_at_field: "to_timestamp(_updated_micros::bigint / 1000000)"
-        freshness:
-          warn_after: {count: 500, period: day}
-          error_after: {count: 600, period: day}
+        config:
+          loaded_at_field: "to_timestamp(_updated_micros::bigint / 1000000)"
+          freshness:
+            warn_after: {count: 500, period: day}
+            error_after: {count: 600, period: day}
         columns:
           - name: _offset
             description: Record offset number
@@ -201,10 +205,11 @@ sources:
       - name: skills
         description: >
           Skills master data including hierarchical relationships and categorization.
-        loaded_at_field: "to_timestamp(_updated_micros::bigint / 1000000)"
-        freshness:
-          warn_after: {count: 240, period: day}
-          error_after: {count: 480, period: day}
+        config:
+          loaded_at_field: "to_timestamp(_updated_micros::bigint / 1000000)"
+          freshness:
+            warn_after: {count: 240, period: day}
+            error_after: {count: 480, period: day}
         columns:
           - name: _offset
             description: Record offset number
