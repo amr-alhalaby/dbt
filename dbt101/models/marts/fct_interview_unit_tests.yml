@@ -1,0 +1,348 @@
+unit_tests:
+  - name: test_interview_duration_calculation
+    description: Test that interview_duration is calculated correctly as time from IN_PROGRESS to PENDING_FEEDBACK
+    model: fct_interview
+    given:
+      - input: ref('stg_interviews_historical')
+        rows:
+          - interview_id: INT001
+            candidate_id: CAND001
+            interviewer_id: EMP001
+            candidate_type: Applicant
+            status: DRAFT
+            location: MS_TEAMS
+            logged: true
+            media_available: true
+            run_type: ONLINE
+            interview_type: Technical
+            media_status: Available
+            invite_answer_status: Accepted
+            created_at: '2024-01-15 09:00:00'
+            updated_at: '2024-01-15 09:00:00'
+            row_valid_from: '2024-01-15 09:00:00'
+            row_valid_to: null
+            row_is_active: 1
+            offset: 1
+          - interview_id: INT001
+            candidate_id: CAND001
+            interviewer_id: EMP001
+            candidate_type: Applicant
+            status: IN_PROGRESS
+            location: MS_TEAMS
+            logged: true
+            media_available: true
+            run_type: ONLINE
+            interview_type: Technical
+            media_status: Available
+            invite_answer_status: Accepted
+            created_at: '2024-01-15 09:00:00'
+            updated_at: '2024-01-15 10:00:00'
+            row_valid_from: '2024-01-15 10:00:00'
+            row_valid_to: null
+            row_is_active: 1
+            offset: 2
+          - interview_id: INT001
+            candidate_id: CAND001
+            interviewer_id: EMP001
+            candidate_type: Applicant
+            status: PENDING_FEEDBACK
+            location: MS_TEAMS
+            logged: true
+            media_available: true
+            run_type: ONLINE
+            interview_type: Technical
+            media_status: Available
+            invite_answer_status: Accepted
+            created_at: '2024-01-15 09:00:00'
+            updated_at: '2024-01-15 11:30:00'
+            row_valid_from: '2024-01-15 11:30:00'
+            row_valid_to: null
+            row_is_active: 1
+            offset: 3
+      - input: ref('stg_candidates_historical')
+        rows:
+          - candidate_id: CAND001
+            offset: 100
+            primary_skill_id: SKILL001
+            staffing_status: Available
+            english_level: C1
+            job_function_id: JOB001
+            created_at: '2024-01-01 00:00:00'
+            updated_at: '2024-01-01 00:00:00'
+            row_valid_from: '2024-01-01 00:00:00'
+            row_valid_to: null
+            row_is_active: 1
+      - input: ref('stg_employees_historical')
+        rows:
+          - employee_id: EMP001
+            offset: 200
+            job_function_id: JOB002
+            primary_skill_id: SKILL002
+            production_category: Delivery
+            employment_status: Full-time employee
+            org_category: Engineering
+            org_category_type: Technical
+            work_start_date: '2023-01-01'
+            work_end_date: null
+            is_active: true
+            created_at: '2023-01-01 00:00:00'
+            updated_at: '2023-01-01 00:00:00'
+            row_valid_from: '2023-01-01 00:00:00'
+            row_valid_to: null
+            row_is_active: 1
+    expect:
+      rows:
+        - id: INT001
+          interview_duration: 90  # 90 minutes from 10:00 to 11:30
+
+  - name: test_feedback_delay_calculation
+    description: Test that feedback_delay is calculated correctly as time from PENDING_FEEDBACK to COMPLETED
+    model: fct_interview
+    given:
+      - input: ref('stg_interviews_historical')
+        rows:
+          - interview_id: INT002
+            candidate_id: CAND002
+            interviewer_id: EMP002
+            candidate_type: Applicant
+            status: PENDING_FEEDBACK
+            location: ZOOM
+            logged: true
+            media_available: true
+            run_type: ONLINE
+            interview_type: Behavioral
+            media_status: Available
+            invite_answer_status: Accepted
+            created_at: '2024-01-20 14:00:00'
+            updated_at: '2024-01-20 16:00:00'
+            row_valid_from: '2024-01-20 16:00:00'
+            row_valid_to: null
+            row_is_active: 1
+            offset: 10
+          - interview_id: INT002
+            candidate_id: CAND002
+            interviewer_id: EMP002
+            candidate_type: Applicant
+            status: COMPLETED
+            location: ZOOM
+            logged: true
+            media_available: true
+            run_type: ONLINE
+            interview_type: Behavioral
+            media_status: Available
+            invite_answer_status: Accepted
+            created_at: '2024-01-20 14:00:00'
+            updated_at: '2024-01-20 17:30:00'
+            row_valid_from: '2024-01-20 17:30:00'
+            row_valid_to: null
+            row_is_active: 1
+            offset: 11
+      - input: ref('stg_candidates_historical')
+        rows:
+          - candidate_id: CAND002
+            offset: 101
+            primary_skill_id: SKILL003
+            staffing_status: Available
+            english_level: B2
+            job_function_id: JOB003
+            created_at: '2024-01-01 00:00:00'
+            updated_at: '2024-01-01 00:00:00'
+            row_valid_from: '2024-01-01 00:00:00'
+            row_valid_to: null
+            row_is_active: 1
+      - input: ref('stg_employees_historical')
+        rows:
+          - employee_id: EMP002
+            offset: 201
+            job_function_id: JOB004
+            primary_skill_id: SKILL004
+            production_category: Delivery
+            employment_status: Full-time employee
+            org_category: HR
+            org_category_type: Support
+            work_start_date: '2022-06-01'
+            work_end_date: null
+            is_active: true
+            created_at: '2022-06-01 00:00:00'
+            updated_at: '2022-06-01 00:00:00'
+            row_valid_from: '2022-06-01 00:00:00'
+            row_valid_to: null
+            row_is_active: 1
+    expect:
+      rows:
+        - id: INT002
+          feedback_delay: 90  # 90 minutes from 16:00 to 17:30
+
+  - name: test_point_in_time_join_candidate
+    description: Test that point-in-time join retrieves the correct candidate version at interview creation time
+    model: fct_interview
+    given:
+      - input: ref('stg_interviews_historical')
+        rows:
+          - interview_id: INT003
+            candidate_id: CAND003
+            interviewer_id: EMP003
+            candidate_type: Applicant
+            status: DRAFT
+            location: IN_PERSON
+            logged: false
+            media_available: false
+            run_type: IN_PERSON
+            interview_type: Technical
+            media_status: NotAvailable
+            invite_answer_status: Pending
+            created_at: '2024-02-15 10:00:00'
+            updated_at: '2024-02-15 10:00:00'
+            row_valid_from: '2024-02-15 10:00:00'
+            row_valid_to: null
+            row_is_active: 1
+            offset: 20
+      - input: ref('stg_candidates_historical')
+        rows:
+          # Old version - valid before interview
+          - candidate_id: CAND003
+            offset: 102
+            primary_skill_id: SKILL_OLD
+            staffing_status: Available
+            english_level: B1
+            job_function_id: JOB_OLD
+            created_at: '2024-01-01 00:00:00'
+            updated_at: '2024-01-01 00:00:00'
+            row_valid_from: '2024-01-01 00:00:00'
+            row_valid_to: '2024-02-10 00:00:00'
+            row_is_active: 0
+          # Current version - valid at interview time
+          - candidate_id: CAND003
+            offset: 103
+            primary_skill_id: SKILL_NEW
+            staffing_status: Staffed
+            english_level: C1
+            job_function_id: JOB_NEW
+            created_at: '2024-01-01 00:00:00'
+            updated_at: '2024-02-10 00:00:00'
+            row_valid_from: '2024-02-10 00:00:00'
+            row_valid_to: null
+            row_is_active: 1
+      - input: ref('stg_employees_historical')
+        rows:
+          - employee_id: EMP003
+            offset: 202
+            job_function_id: JOB005
+            primary_skill_id: SKILL005
+            production_category: Delivery
+            employment_status: Full-time employee
+            org_category: Engineering
+            org_category_type: Technical
+            work_start_date: '2023-01-01'
+            work_end_date: null
+            is_active: true
+            created_at: '2023-01-01 00:00:00'
+            updated_at: '2023-01-01 00:00:00'
+            row_valid_from: '2023-01-01 00:00:00'
+            row_valid_to: null
+            row_is_active: 1
+    expect:
+      rows:
+        - id: INT003
+          candidate_offset: 103  # Should get the version valid at interview time (Feb 15), not the old one
+
+  - name: test_status_pivot_logic
+    description: Test that status timestamps are correctly extracted and pivoted
+    model: fct_interview
+    given:
+      - input: ref('stg_interviews_historical')
+        rows:
+          - interview_id: INT004
+            candidate_id: CAND004
+            interviewer_id: EMP004
+            candidate_type: Applicant
+            status: DRAFT
+            location: MS_TEAMS
+            logged: true
+            media_available: true
+            run_type: ONLINE
+            interview_type: Technical
+            media_status: Available
+            invite_answer_status: Accepted
+            created_at: '2024-03-01 09:00:00'
+            updated_at: '2024-03-01 09:00:00'
+            row_valid_from: '2024-03-01 09:00:00'
+            row_valid_to: null
+            row_is_active: 1
+            offset: 30
+          - interview_id: INT004
+            candidate_id: CAND004
+            interviewer_id: EMP004
+            candidate_type: Applicant
+            status: SCHEDULED
+            location: MS_TEAMS
+            logged: true
+            media_available: true
+            run_type: ONLINE
+            interview_type: Technical
+            media_status: Available
+            invite_answer_status: Accepted
+            created_at: '2024-03-01 09:00:00'
+            updated_at: '2024-03-01 09:30:00'
+            row_valid_from: '2024-03-01 09:30:00'
+            row_valid_to: null
+            row_is_active: 1
+            offset: 31
+          - interview_id: INT004
+            candidate_id: CAND004
+            interviewer_id: EMP004
+            candidate_type: Applicant
+            status: CANCELLED
+            location: MS_TEAMS
+            logged: true
+            media_available: true
+            run_type: ONLINE
+            interview_type: Technical
+            media_status: Available
+            invite_answer_status: Accepted
+            created_at: '2024-03-01 09:00:00'
+            updated_at: '2024-03-01 10:00:00'
+            row_valid_from: '2024-03-01 10:00:00'
+            row_valid_to: null
+            row_is_active: 1
+            offset: 32
+      - input: ref('stg_candidates_historical')
+        rows:
+          - candidate_id: CAND004
+            offset: 104
+            primary_skill_id: SKILL006
+            staffing_status: Available
+            english_level: C2
+            job_function_id: JOB006
+            created_at: '2024-01-01 00:00:00'
+            updated_at: '2024-01-01 00:00:00'
+            row_valid_from: '2024-01-01 00:00:00'
+            row_valid_to: null
+            row_is_active: 1
+      - input: ref('stg_employees_historical')
+        rows:
+          - employee_id: EMP004
+            offset: 203
+            job_function_id: JOB007
+            primary_skill_id: SKILL007
+            production_category: Delivery
+            employment_status: Full-time employee
+            org_category: Engineering
+            org_category_type: Technical
+            work_start_date: '2023-01-01'
+            work_end_date: null
+            is_active: true
+            created_at: '2023-01-01 00:00:00'
+            updated_at: '2023-01-01 00:00:00'
+            row_valid_from: '2023-01-01 00:00:00'
+            row_valid_to: null
+            row_is_active: 1
+    expect:
+      rows:
+        - id: INT004
+          draft_datetime: '2024-03-01 09:00:00'
+          scheduled_datetime: '2024-03-01 09:30:00'
+          cancelled_datetime: '2024-03-01 10:00:00'
+          started_datetime: null
+          finished_datetime: null
+          feedback_provided_datetime: null
