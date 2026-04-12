@@ -21,20 +21,36 @@ sources:
         columns:
           - name: _offset
             description: Record offset number
+            tests:
+              - not_null
           - name: candidate_id
             description: Unique identifier for candidate
+            tests:
+              - not_null
           - name: primary_skill_id
             description: Foreign key to primary skill
+            tests:
+              - relationships:
+                  to: source('raw', 'skills')
+                  field: id
+                  severity: warn
           - name: staffing_status
             description: Current staffing status (e.g., Available)
           - name: english_level
             description: English proficiency level (C1, B2, etc.)
           - name: job_function_id
             description: Foreign key to job function
+            tests:
+              - relationships:
+                  to: source('raw', 'job_functions')
+                  field: job_function_id
+                  severity: warn
           - name: _created_micros
             description: Record creation timestamp in microseconds
           - name: _updated_micros
             description: Last update timestamp in microseconds
+            tests:
+              - not_null
 
       - name: employees
         description: >
@@ -46,13 +62,28 @@ sources:
           error_after: {count: 600, period: day}
         columns:
           - name: _offset
+            tests:
+              - not_null
             description: Record offset number
           - name: employee_id
             description: Unique identifier for employee
+            tests:
+              - not_null:
+                  severity: warn
           - name: job_function_id
             description: Foreign key to job function
+            tests:
+              - relationships:
+                  to: source('raw', 'job_functions')
+                  field: job_function_id
+                  severity: warn
           - name: primary_skill_id
             description: Foreign key to primary skill
+            tests:
+              - relationships:
+                  to: source('raw', 'skills')
+                  field: id
+                  severity: warn
           - name: production_category
             description: Production category classification
           - name: employment_status
@@ -71,6 +102,8 @@ sources:
             description: Record creation timestamp in microseconds
           - name: _updated_micros
             description: Last update timestamp in microseconds
+            tests:
+              - not_null
 
       - name: interviews
         description: >
@@ -82,17 +115,31 @@ sources:
           error_after: {count: 600, period: hour}
         columns:
           - name: _offset
+            tests:
+              - not_null
             description: Record offset number
           - name: id
             description: Unique interview identifier
+            tests:
+              - not_null
           - name: candidate_type
             description: Type of candidate (e.g., Applicant)
           - name: candidate_id
             description: Foreign key to candidate
+            tests:
+              - relationships:
+                  to: source('raw', 'candidates')
+                  field: candidate_id
+                  severity: warn
           - name: status
             description: Interview status (e.g., DRAFT)
           - name: interviewer_id
             description: Identifier of the interviewer
+            tests:
+              - relationships:
+                  to: source('raw', 'employees')
+                  field: employee_id
+                  severity: warn
           - name: location
             description: Interview location/platform (e.g., MS_TEAMS)
           - name: logged
@@ -111,6 +158,8 @@ sources:
             description: Record creation timestamp in microseconds
           - name: _updated_micros
             description: Last update timestamp in microseconds
+            tests:
+              - not_null
 
       - name: job_functions
         description: >
@@ -122,8 +171,12 @@ sources:
         columns:
           - name: _offset
             description: Record offset number
+            tests:
+              - not_null
           - name: job_function_id
             description: Unique identifier for job function
+            tests:
+              - not_null
           - name: base_name
             description: Base name of the job function
           - name: category
@@ -142,6 +195,8 @@ sources:
             description: Record creation timestamp in microseconds
           - name: _updated_micros
             description: Last update timestamp in microseconds
+            tests:
+              - not_null
 
       - name: skills
         description: >
@@ -153,8 +208,12 @@ sources:
         columns:
           - name: _offset
             description: Record offset number
+            tests:
+              - not_null
           - name: id
             description: Unique skill identifier
+            tests:
+              - not_null
           - name: is_active
             description: Whether skill is currently active
           - name: is_primary
@@ -171,7 +230,14 @@ sources:
             description: Reference URL for skill information
           - name: parent_id
             description: Parent skill ID for hierarchical relationships
+            tests:
+              - relationships:
+                  to: source('raw', 'skills')
+                  field: id
+                  severity: warn
           - name: _created_micros
             description: Record creation timestamp in microseconds
           - name: _updated_micros
             description: Last update timestamp in microseconds
+            tests:
+              - not_null

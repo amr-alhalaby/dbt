@@ -30,7 +30,11 @@
 {%- endif -%}
 
 WITH source AS (
-    SELECT * FROM {{ source(source_name, table_name) }}
+    SELECT *
+    FROM {{ source(source_name, table_name) }}
+    {%- if pk_column %}
+    WHERE {{ pk_column }} IS NOT NULL  -- Filter out records with null primary key
+    {%- endif %}
 ),
 
 transformed AS (
