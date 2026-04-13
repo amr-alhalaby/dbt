@@ -13,7 +13,7 @@ models:
       - elementary.schema_changes
     columns:
       - name: _offset
-        description: Record offset (bigint)
+        description: "{{ doc('offset_column') }}"
       - name: id
         description: Candidate business key
         tests:
@@ -41,7 +41,7 @@ models:
       - elementary.schema_changes
     columns:
       - name: _offset
-        description: Record offset (bigint)
+        description: "{{ doc('offset_column') }}"
       - name: id
         description: Employee business key
         tests:
@@ -90,7 +90,7 @@ models:
           - not_null
 
   - name: dim_date
-    description: Date dimension
+    description: Date dimension covering 4 years (2024-2027) with weekend and holiday flags
     tests:
       - elementary.volume_anomalies:
           timestamp_column: "date"
@@ -103,13 +103,22 @@ models:
         tests:
           - unique
           - not_null
+      - name: is_weekend
+        description: "{{ doc('weekend_logic') }}"
+      - name: day_of_week
+        description: "Day of week number (0=Sunday, 1=Monday, ..., 6=Saturday)"
 
   - name: fct_interview
-    description: >
+    description: |
       Interview fact table. Grain is one row per unique interview ID.
-      Dimension attributes reflect state at interview creation time (point-in-time).
-      interview_duration = in_progress to pending_feedback (online interviews only).
-      feedback_delay = pending_feedback to completed.
+
+      {{ doc('point_in_time_joins') }}
+
+      {{ doc('interview_status_timeline') }}
+
+      **Key Metrics:**
+      - interview_duration = in_progress to pending_feedback (online interviews only)
+      - feedback_delay = pending_feedback to completed
     tests:
       - elementary.volume_anomalies:
           timestamp_column: "created_date"

@@ -2,7 +2,10 @@ version: 2
 
 models:
   - name: stg_candidates_historical
-    description: Historical staging model for candidates with SCD Type 2 tracking
+    description: |
+      Historical staging model for candidates with SCD Type 2 tracking.
+
+      {{ doc('historical_scd_type2_pattern') }}
     tests:
       - elementary.volume_anomalies:
           timestamp_column: "_loaded_at"
@@ -19,7 +22,7 @@ models:
       - elementary.schema_changes
     columns:
       - name: offset
-        description: Record offset (technical surrogate key)
+        description: "{{ doc('offset_column') }}"
         tests:
           - not_null
           - dbt_utils.expression_is_true:
@@ -112,7 +115,10 @@ models:
                 expression: "IS NULL"
 
   - name: stg_employees_historical
-    description: Historical staging model for employees with SCD Type 2 tracking
+    description: |
+      Historical staging model for employees with SCD Type 2 tracking.
+
+      {{ doc('historical_scd_type2_pattern') }}
     tests:
       - elementary.volume_anomalies:
           timestamp_column: "_loaded_at"
