@@ -1,0 +1,212 @@
+name: dbt CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - master
+      - main
+  pull_request:
+    branches:
+      - master
+      - main
+
+env:
+  DBT_PROFILES_DIR: ${{ github.workspace }}
+  SNOW_DATABASE: DBT_PROJECT
+  SNOW_WAREHOUSE: TRANSFORMING
+  SNOW_ROLE: ACCOUNTADMIN
+
+jobs:
+  # CI Job - Run on Pull Requests and Pushes
+  dbt-ci:
+    name: dbt CI Tests
+    runs-on: ubuntu-latest
+    environment: ci
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Create profiles.yml
+        run: |
+          mkdir -p $DBT_PROFILES_DIR
+          cat > $DBT_PROFILES_DIR/profiles.yml <<EOF
+          dbt101:
+            outputs:
+              ci:
+                account: \${{ secrets.SNOW_ACCOUNT }}
+                database: ${{ env.SNOW_DATABASE }}
+                password: \${{ secrets.SNOW_USER_PASSWORD }}
+                role: ${{ env.SNOW_ROLE }}
+                schema: CI
+                threads: 4
+                type: snowflake
+                user: \${{ secrets.SNOW_USER }}
+                warehouse: ${{ env.SNOW_WAREHOUSE }}
+            target: ci
+          EOF
+
+      - name: dbt Debug
+        working-directory: dbt101
+        run: dbt debug --target ci
+
+      - name: dbt Deps
+        working-directory: dbt101
+        run: dbt deps
+
+      - name: dbt Seed
+        working-directory: dbt101
+        run: dbt seed --target ci --select state:modified+ --defer --state ./target
+
+      - name: dbt Run
+        working-directory: dbt101
+        run: dbt run --target ci --select state:modified+ --defer --state ./target
+
+      - name: dbt Test
+        working-directory: dbt101
+        run: dbt test --target ci --select state:modified+ --defer --state ./target
+
+      - name: Generate dbt Docs
+        working-directory: dbt101
+        run: dbt docs generate --target ci
+
+      - name: Upload dbt artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dbt-ci-artifacts
+          path: dbt101/target/
+          retention-days: 7
+
+  # Production Deployment Job - Run only on master/main branch
+  dbt-prod-deploy:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    environment: production
+    needs: dbt-ci
+    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Create profiles.yml
+        run: |
+          mkdir -p $DBT_PROFILES_DIR
+          cat > $DBT_PROFILES_DIR/profiles.yml <<EOF
+          dbt101:
+            outputs:
+              prod:
+                account: \${{ secrets.SNOW_ACCOUNT }}
+                database: ${{ env.SNOW_DATABASE }}
+                password: \${{ secrets.SNOW_USER_PASSWORD }}
+                role: ${{ env.SNOW_ROLE }}
+                schema: PROD
+                threads: 8
+                type: snowflake
+                user: \${{ secrets.SNOW_USER }}
+                warehouse: ${{ env.SNOW_WAREHOUSE }}
+            target: prod
+          EOF
+
+      - name: dbt Debug
+        working-directory: dbt101
+        run: dbt debug --target prod
+
+      - name: dbt Deps
+        working-directory: dbt101
+        run: dbt deps
+
+      - name: dbt Seed (Full Refresh)
+        working-directory: dbt101
+        run: dbt seed --target prod --full-refresh
+
+      - name: dbt Run (Production)
+        working-directory: dbt101
+        run: dbt run --target prod
+
+      - name: dbt Test (Production)
+        working-directory: dbt101
+        run: dbt test --target prod
+
+      - name: Generate Production Docs
+        working-directory: dbt101
+        run: dbt docs generate --target prod
+
+      - name: Upload Production Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dbt-prod-artifacts
+          path: dbt101/target/
+          retention-days: 30
+
+  # Scheduled Daily Test Run
+  dbt-daily-tests:
+    name: Daily Data Quality Tests
+    runs-on: ubuntu-latest
+    environment: production
+    if: github.event_name == 'schedule'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Create profiles.yml
+        run: |
+          mkdir -p $DBT_PROFILES_DIR
+          cat > $DBT_PROFILES_DIR/profiles.yml <<EOF
+          dbt101:
+            outputs:
+              prod:
+                account: \${{ secrets.SNOW_ACCOUNT }}
+                database: ${{ env.SNOW_DATABASE }}
+                password: \${{ secrets.SNOW_USER_PASSWORD }}
+                role: ${{ env.SNOW_ROLE }}
+                schema: PROD
+                threads: 8
+                type: snowflake
+                user: \${{ secrets.SNOW_USER }}
+                warehouse: ${{ env.SNOW_WAREHOUSE }}
+            target: prod
+          EOF
+
+      - name: Run dbt Tests
+        working-directory: dbt101
+        run: dbt test --target prod
+
+# Uncomment to enable scheduled daily runs
+# on:
+#   schedule:
+#     - cron: '0 8 * * *'  # Run at 8 AM UTC daily

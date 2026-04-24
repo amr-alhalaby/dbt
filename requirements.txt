@@ -1,0 +1,7 @@
+# Core dbt dependencies
+dbt-core==1.11.7
+dbt-snowflake==1.11.3
+
+# Additional packages
+sqlfluff==4.0.4
+sqlfluff-templater-dbt==4.0.4

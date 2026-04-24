@@ -3,10 +3,15 @@
 
 # Except these files/folders
 !.gitignore
+!.github/
+!.gitlab-ci.yml
 !.pre-commit-config.yaml
 !.sqlfluff
+!requirements.txt
 !requirements-dev.txt
 !README.md
+!GITHUB_ACTIONS_SETUP.md
+!GITLAB_CI_SETUP.md
 !dbt101/
 
 # Python
@@ -41,6 +46,10 @@ ENV/
 dbt101/target/
 dbt101/dbt_packages/
 dbt101/logs/
+
+# dbt profiles with credentials
+profiles.yml
+.dbt/profiles.yml
 
 # Jupyter Notebook
 .ipynb_checkpoints
