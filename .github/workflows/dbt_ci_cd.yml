@@ -45,14 +45,14 @@ jobs:
           dbt101:
             outputs:
               ci:
-                account: \${{ secrets.SNOW_ACCOUNT }}
+                account: mccqsk-aq69260
                 database: ${{ env.SNOW_DATABASE }}
-                password: \${{ secrets.SNOW_USER_PASSWORD }}
+                password: 123456789123456789AmR
                 role: ${{ env.SNOW_ROLE }}
                 schema: CI
                 threads: 4
                 type: snowflake
-                user: \${{ secrets.SNOW_USER }}
+                user: AMRALHALABY
                 warehouse: ${{ env.SNOW_WAREHOUSE }}
             target: ci
           EOF
