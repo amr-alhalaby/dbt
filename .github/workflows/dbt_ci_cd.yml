@@ -39,21 +39,26 @@ jobs:
           pip install -r requirements.txt
 
       - name: Create profiles.yml
+        env:
+          SNOW_ACCOUNT: ${{ secrets.SNOW_ACCOUNT }}
+          SNOW_USER: ${{ secrets.SNOW_USER }}
+          SNOW_PRIVATE_KEY: ${{ secrets.SNOW_PRIVATE_KEY }}
         run: |
+          echo "$SNOW_PRIVATE_KEY" > /tmp/snowflake_key.p8
           mkdir -p $DBT_PROFILES_DIR
           cat > $DBT_PROFILES_DIR/profiles.yml <<EOF
           dbt101:
             outputs:
               ci:
-                account: mccqsk-aq69260
-                database: ${{ env.SNOW_DATABASE }}
-                password: 123456789123456789AmR
-                role: ${{ env.SNOW_ROLE }}
+                account: $SNOW_ACCOUNT
+                database: DBT_PROJECT
+                private_key_path: /tmp/snowflake_key.p8
+                role: ACCOUNTADMIN
                 schema: CI
                 threads: 4
                 type: snowflake
-                user: AMRALHALABY
-                warehouse: ${{ env.SNOW_WAREHOUSE }}
+                user: $SNOW_USER
+                warehouse: TRANSFORMING
             target: ci
           EOF
 
@@ -112,21 +117,26 @@ jobs:
           pip install -r requirements.txt
 
       - name: Create profiles.yml
+        env:
+          SNOW_ACCOUNT: ${{ secrets.SNOW_ACCOUNT }}
+          SNOW_USER: ${{ secrets.SNOW_USER }}
+          SNOW_PRIVATE_KEY: ${{ secrets.SNOW_PRIVATE_KEY }}
         run: |
+          echo "$SNOW_PRIVATE_KEY" > /tmp/snowflake_key.p8
           mkdir -p $DBT_PROFILES_DIR
           cat > $DBT_PROFILES_DIR/profiles.yml <<EOF
           dbt101:
             outputs:
               prod:
-                account: \${{ secrets.SNOW_ACCOUNT }}
-                database: ${{ env.SNOW_DATABASE }}
-                password: \${{ secrets.SNOW_USER_PASSWORD }}
-                role: ${{ env.SNOW_ROLE }}
+                account: $SNOW_ACCOUNT
+                database: DBT_PROJECT
+                private_key_path: /tmp/snowflake_key.p8
+                role: ACCOUNTADMIN
                 schema: PROD
                 threads: 8
                 type: snowflake
-                user: \${{ secrets.SNOW_USER }}
-                warehouse: ${{ env.SNOW_WAREHOUSE }}
+                user: $SNOW_USER
+                warehouse: TRANSFORMING
             target: prod
           EOF
 
@@ -184,21 +194,26 @@ jobs:
           pip install -r requirements.txt
 
       - name: Create profiles.yml
+        env:
+          SNOW_ACCOUNT: ${{ secrets.SNOW_ACCOUNT }}
+          SNOW_USER: ${{ secrets.SNOW_USER }}
+          SNOW_PRIVATE_KEY: ${{ secrets.SNOW_PRIVATE_KEY }}
         run: |
+          echo "$SNOW_PRIVATE_KEY" > /tmp/snowflake_key.p8
           mkdir -p $DBT_PROFILES_DIR
           cat > $DBT_PROFILES_DIR/profiles.yml <<EOF
           dbt101:
             outputs:
               prod:
-                account: \${{ secrets.SNOW_ACCOUNT }}
-                database: ${{ env.SNOW_DATABASE }}
-                password: \${{ secrets.SNOW_USER_PASSWORD }}
-                role: ${{ env.SNOW_ROLE }}
+                account: $SNOW_ACCOUNT
+                database: DBT_PROJECT
+                private_key_path: /tmp/snowflake_key.p8
+                role: ACCOUNTADMIN
                 schema: PROD
                 threads: 8
                 type: snowflake
-                user: \${{ secrets.SNOW_USER }}
-                warehouse: ${{ env.SNOW_WAREHOUSE }}
+                user: $SNOW_USER
+                warehouse: TRANSFORMING
             target: prod
           EOF
 
