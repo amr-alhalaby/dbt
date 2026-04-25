@@ -1,6 +1,6 @@
 # dbt-course
 
-This repository contains seed data and an initial ingestion script to set up the `raw` schema in the `dbt_project` database within your Snowflake account.
+This repository contains seed data and an initial ingestion script to set up the `raw` schema in the `dbt_project` database within your Snowflake account .
 
 ## 📦 Contents
 
