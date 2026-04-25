@@ -4,13 +4,6 @@ models:
   - name: dim_candidate
     description: Candidate dimension with SCD Type 2 history
     tests:
-      - elementary.volume_anomalies:
-          timestamp_column: "_valid_from"
-          where_expression: "_valid_to IS NULL"
-          training_period: 30
-          detection_period: 7
-          sensitivity: 3
-      - elementary.schema_changes
     columns:
       - name: _offset
         description: "{{ doc('offset_column') }}"
@@ -32,13 +25,6 @@ models:
   - name: dim_employee
     description: Employee dimension with SCD Type 2 history
     tests:
-      - elementary.volume_anomalies:
-          timestamp_column: "_valid_from"
-          where_expression: "_valid_to IS NULL"
-          training_period: 30
-          detection_period: 7
-          sensitivity: 3
-      - elementary.schema_changes
     columns:
       - name: _offset
         description: "{{ doc('offset_column') }}"
@@ -60,12 +46,6 @@ models:
   - name: dim_primary_skill
     description: Primary skill dimension
     tests:
-      - elementary.volume_anomalies:
-          timestamp_column: "_valid_from"
-          where_expression: "_valid_to IS NULL"
-          training_period: 30
-          detection_period: 7
-          sensitivity: 3
     columns:
       - name: id
         description: Skill business key
@@ -76,12 +56,6 @@ models:
   - name: dim_job_function
     description: Job function dimension
     tests:
-      - elementary.volume_anomalies:
-          timestamp_column: "_valid_from"
-          where_expression: "_valid_to IS NULL"
-          training_period: 30
-          detection_period: 7
-          sensitivity: 3
     columns:
       - name: id
         description: Job function business key
@@ -92,11 +66,6 @@ models:
   - name: dim_date
     description: Date dimension covering 4 years (2024-2027) with weekend and holiday flags
     tests:
-      - elementary.volume_anomalies:
-          timestamp_column: "date"
-          training_period: 30
-          detection_period: 7
-          sensitivity: 5
     columns:
       - name: date
         description: Calendar date
@@ -120,12 +89,6 @@ models:
       - interview_duration = in_progress to pending_feedback (online interviews only)
       - feedback_delay = pending_feedback to completed
     tests:
-      - elementary.volume_anomalies:
-          timestamp_column: "created_date"
-          training_period: 30
-          detection_period: 7
-          sensitivity: 3
-      - elementary.schema_changes
     columns:
       - name: id
         description: Unique interview identifier

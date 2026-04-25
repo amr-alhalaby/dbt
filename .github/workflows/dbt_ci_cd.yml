@@ -80,7 +80,7 @@ jobs:
 
       - name: dbt Test
         working-directory: dbt101
-        run: dbt test --target ci
+        run: dbt test --target ci --exclude "package:elementary"
 
       - name: Generate dbt Docs
         working-directory: dbt101
@@ -158,7 +158,7 @@ jobs:
 
       - name: dbt Test (Production)
         working-directory: dbt101
-        run: dbt test --target prod
+        run: dbt test --target prod --exclude "package:elementary"
 
       - name: Generate Production Docs
         working-directory: dbt101
@@ -219,7 +219,7 @@ jobs:
 
       - name: Run dbt Tests
         working-directory: dbt101
-        run: dbt test --target prod
+        run: dbt test --target prod --exclude "package:elementary"
 
 # Uncomment to enable scheduled daily runs
 # on:

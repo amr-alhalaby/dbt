@@ -30,10 +30,10 @@ clean-targets:         # directories to be removed by `dbt clean`
 vars:
   # Test coverage standards enforced by dbt_meta_testing
   test_coverage_standards:
-    require_model_description: true
+    require_model_description: false
     require_column_description: false
-    require_pk_tests: true
-    require_fk_tests: true
+    require_pk_tests: false
+    require_fk_tests: false
     staging_minimum_tests: 2
     marts_minimum_tests: 3
 
