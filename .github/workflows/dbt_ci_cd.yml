@@ -22,6 +22,8 @@ jobs:
     name: dbt CI Tests
     runs-on: ubuntu-latest
     environment: ci
+    env:
+      CI_SCHEMA: "CI_${{ github.run_id }}"
 
     steps:
       - name: Checkout code
@@ -54,7 +56,7 @@ jobs:
                 database: DBT_PROJECT
                 private_key_path: /tmp/snowflake_key.p8
                 role: ACCOUNTADMIN
-                schema: CI
+                schema: $CI_SCHEMA
                 threads: 4
                 type: snowflake
                 user: $SNOW_USER
@@ -92,6 +94,28 @@ jobs:
           name: dbt-ci-artifacts
           path: dbt101/target/
           retention-days: 7
+
+      - name: Drop CI Schema
+        if: always()
+        env:
+          SNOW_ACCOUNT: ${{ secrets.SNOW_ACCOUNT }}
+          SNOW_USER: ${{ secrets.SNOW_USER }}
+          SNOW_PRIVATE_KEY: ${{ secrets.SNOW_PRIVATE_KEY }}
+        run: |
+          pip install snowflake-connector-python --quiet
+          python - <<PYEOF
+          import os, snowflake.connector
+          conn = snowflake.connector.connect(
+              account=os.environ['SNOW_ACCOUNT'],
+              user=os.environ['SNOW_USER'],
+              private_key_file='/tmp/snowflake_key.p8',
+              role='ACCOUNTADMIN',
+          )
+          schema = os.environ['CI_SCHEMA']
+          conn.cursor().execute(f"DROP SCHEMA IF EXISTS DBT_PROJECT.{schema}")
+          print(f"Dropped schema: DBT_PROJECT.{schema}")
+          conn.close()
+          PYEOF
 
   # Production Deployment Job - Run only on master/main branch
   dbt-prod-deploy:

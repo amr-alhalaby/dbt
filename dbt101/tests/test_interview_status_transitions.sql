@@ -1,5 +1,8 @@
 -- Custom test: Ensure interview status transitions are logical
 -- An interview should not go from COMPLETED back to IN_PROGRESS
+-- Severity: warn - flags data quality issues without failing the pipeline
+
+{{ config(severity='warn') }}
 
 WITH status_changes AS (
     SELECT

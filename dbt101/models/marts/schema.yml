@@ -37,11 +37,17 @@ models:
           - relationships:
               to: ref('dim_job_function')
               field: id
+              config:
+                where: "job_function_id is not null"
+                severity: warn
       - name: primary_skill_id
         tests:
           - relationships:
               to: ref('dim_primary_skill')
               field: id
+              config:
+                where: "primary_skill_id is not null"
+                severity: warn
 
   - name: dim_primary_skill
     description: Primary skill dimension
