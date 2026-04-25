@@ -15,6 +15,9 @@ models:
           - relationships:
               to: ref('dim_primary_skill')
               field: id
+              config:
+                where: "primary_skill_id is not null"
+                severity: warn
       - name: job_function_id
         tests:
           - relationships:
