@@ -6,7 +6,6 @@ models:
       Historical staging model for candidates with SCD Type 2 tracking.
 
       {{ doc('historical_scd_type2_pattern') }}
-    tests:
     columns:
       - name: offset
         description: "{{ doc('offset_column') }}"
@@ -101,7 +100,6 @@ models:
       Historical staging model for employees with SCD Type 2 tracking.
 
       {{ doc('historical_scd_type2_pattern') }}
-    tests:
     columns:
       - name: offset
         description: Record offset (technical surrogate key)
@@ -170,7 +168,6 @@ models:
 
   - name: stg_employees_latest
     description: Latest version of each employee (current records only)
-    tests:
     columns:
       - name: employee_id
         description: Unique business identifier
@@ -180,7 +177,6 @@ models:
 
   - name: stg_interviews_historical
     description: Historical staging model for interviews
-    tests:
     columns:
       - name: offset
         description: Record offset
@@ -231,7 +227,6 @@ models:
 
   - name: stg_interviews_latest
     description: Latest version of each interview
-    tests:
     columns:
       - name: interview_id
         description: Unique interview identifier
@@ -241,7 +236,6 @@ models:
 
   - name: stg_job_functions_historical
     description: Historical staging model for job functions
-    tests:
     columns:
       - name: offset
         description: Record offset
@@ -287,7 +281,6 @@ models:
 
   - name: stg_job_functions_latest
     description: Latest version of each job function
-    tests:
     columns:
       - name: job_function_id
         description: Unique job function identifier
@@ -297,7 +290,6 @@ models:
 
   - name: stg_skills_historical
     description: Historical staging model for skills
-    tests:
     columns:
       - name: offset
         description: Record offset
@@ -342,7 +334,6 @@ models:
 
   - name: stg_skills_latest
     description: Latest version of each skill
-    tests:
     columns:
       - name: skill_id
         description: Unique skill identifier
