@@ -72,15 +72,15 @@ jobs:
 
       - name: dbt Seed
         working-directory: dbt101
-        run: dbt seed --target ci --select state:modified+ --defer --state ./target
+        run: dbt seed --target ci
 
       - name: dbt Run
         working-directory: dbt101
-        run: dbt run --target ci --select state:modified+ --defer --state ./target
+        run: dbt run --target ci
 
       - name: dbt Test
         working-directory: dbt101
-        run: dbt test --target ci --select state:modified+ --defer --state ./target
+        run: dbt test --target ci
 
       - name: Generate dbt Docs
         working-directory: dbt101
